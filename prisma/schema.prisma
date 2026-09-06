@@ -1,0 +1,259 @@
+// TechRise Initiative — Prisma schema
+// Mirrors Docs/database.md
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum EventType {
+  EVENT
+  COMPETITION
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+enum RegistrationStatus {
+  CONFIRMED
+  WAITLISTED
+  CANCELLED
+}
+
+enum ProjectStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  RESOLVED
+}
+
+enum DonationStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+// ============================================================
+// User
+// ============================================================
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  image        String?
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  registrations EventRegistration[]
+  donations     Donation[]
+  inquiries     Inquiry[]
+  blogPosts     BlogPost[]
+  projects      Project[]
+
+  @@index([email])
+}
+
+// ============================================================
+// Event / Competition
+// ============================================================
+
+model Event {
+  id                   String      @id @default(cuid())
+  title                String
+  slug                 String      @unique
+  description          String      @db.Text
+  type                 EventType
+  startDate            DateTime
+  endDate              DateTime
+  registrationDeadline DateTime?
+  capacity             Int?
+  bannerImageUrl       String?
+  status               EventStatus @default(DRAFT)
+  prizePool            Int?        // in cents
+  location             String?
+  isOnline             Boolean     @default(true)
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  registrations EventRegistration[]
+
+  @@index([slug])
+  @@index([status, startDate])
+}
+
+// ============================================================
+// Event Registration
+// ============================================================
+
+model EventRegistration {
+  id           String             @id @default(cuid())
+  userId       String
+  eventId      String
+  status       RegistrationStatus @default(CONFIRMED)
+  registeredAt DateTime           @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([eventId])
+  @@index([userId])
+}
+
+// ============================================================
+// Project (Showcase)
+// ============================================================
+
+model Project {
+  id            String        @id @default(cuid())
+  title         String
+  slug          String        @unique
+  description   String        @db.Text
+  imageUrls     String[]
+  externalLink  String?
+  contributors  String[]
+  submittedById String?
+  status        ProjectStatus @default(APPROVED)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  submittedBy User? @relation(fields: [submittedById], references: [id], onDelete: SetNull)
+
+  @@index([slug])
+  @@index([status, createdAt])
+}
+
+// ============================================================
+// Blog Post
+// ============================================================
+
+model BlogPost {
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  excerpt       String?
+  content       String     @db.Text
+  coverImageUrl String?
+  authorId      String
+  status        PostStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([slug])
+  @@index([status, publishedAt])
+}
+
+// ============================================================
+// Inquiry (Contact form)
+// ============================================================
+
+model Inquiry {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  message   String        @db.Text
+  reason    String?
+  userId    String?
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+}
+
+// ============================================================
+// Donation
+// ============================================================
+
+model Donation {
+  id                    String         @id @default(cuid())
+  userId                String?
+  amount                Int            // cents
+  currency              String         @default("usd")
+  stripeSessionId       String         @unique
+  stripePaymentIntentId String?
+  status                DonationStatus @default(PENDING)
+  donorName             String?
+  donorEmail            String?
+  isRecurring           Boolean        @default(false)
+  message               String?        @db.Text
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([stripeSessionId])
+}
+
+// ============================================================
+// Account / Session (Auth.js — for later phase)
+// ============================================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

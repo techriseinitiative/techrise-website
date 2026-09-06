@@ -1,0 +1,107 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { Rocket, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+
+export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1200);
+  };
+
+  return (
+    <section className="min-h-[calc(100vh-5rem)] grid lg:grid-cols-2 bg-ink-50">
+      {/* Left: form */}
+      <div className="flex items-center justify-center px-5 sm:px-8 py-12">
+        <div className="w-full max-w-md">
+          <div className="inline-flex items-center gap-2 mb-6">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-accent-500 shadow-lg">
+              <Rocket className="h-5 w-5 text-white" strokeWidth={2.5} />
+            </span>
+            <span className="font-display font-bold text-lg">TechRise</span>
+          </div>
+
+          <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight">Welcome back</h1>
+          <p className="mt-2 text-ink-600">Sign in to your account to continue.</p>
+
+          <form onSubmit={onSubmit} className="mt-8 space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-ink-700 mb-2">Email</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400" />
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg border border-ink-200 bg-white pl-10 pr-4 py-2.5 text-sm text-ink-900 placeholder-ink-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="block text-sm font-semibold text-ink-700">Password</label>
+                <Link href="#" className="text-xs font-semibold text-primary-600 hover:text-primary-700">Forgot?</Link>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400" />
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  className="w-full rounded-lg border border-ink-200 bg-white pl-10 pr-4 py-2.5 text-sm text-ink-900 placeholder-ink-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition"
+                />
+              </div>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm text-ink-600">
+              <input type="checkbox" className="h-4 w-4 rounded border-ink-300 text-primary-600 focus:ring-primary-600" />
+              Keep me signed in
+            </label>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-ink-900 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-ink-800 transition hover:scale-[1.01] active:scale-95 disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Sign in <ArrowRight className="h-4 w-4" /></>}
+            </button>
+          </form>
+
+          <p className="mt-8 text-center text-sm text-ink-600">
+            Don't have an account?{" "}
+            <Link href="/signup" className="font-semibold text-primary-600 hover:text-primary-700">Sign up</Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Right: visual */}
+      <div className="hidden lg:flex relative bg-aurora items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-hero-grid opacity-20" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary-500/40 rounded-full blur-3xl" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-accent-500/30 rounded-full blur-3xl" />
+
+        <div className="relative max-w-md p-10 text-white">
+          <p className="text-2xl font-display font-bold leading-snug">
+            "TechRise turned a curious kid with a laptop into a builder shipping tools used by thousands."
+          </p>
+          <div className="mt-8 flex items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold">
+              A
+            </div>
+            <div>
+              <p className="font-semibold">Aarav Mehta</p>
+              <p className="text-sm text-ink-300">Software Engineer · Alumnus '24</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

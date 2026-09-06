@@ -7,7 +7,7 @@ Since the architecture uses **Server Actions** as the primary mutation mechanism
 ---
 
 ## Server Actions
-
+claude
 ### Auth
 | Action | Input | Output | Notes |
 |---|---|---|---|
