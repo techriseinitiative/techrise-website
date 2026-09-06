@@ -20,7 +20,7 @@ export function DeletePostButton({ id }: { id: string }) {
         <button
           onClick={onDelete}
           disabled={pending}
-          className="px-2 py-1 text-xs font-semibold rounded bg-error text-white hover:bg-red-700 transition disabled:opacity-50"
+          className="px-2 py-1 text-xs font-semibold rounded bg-[#F87171] text-white hover:bg-[#EF4444] transition disabled:opacity-50"
         >
           {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Confirm"}
         </button>
@@ -37,7 +37,7 @@ export function DeletePostButton({ id }: { id: string }) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="p-1.5 rounded hover:bg-error/10 text-ink-600 hover:text-error"
+      className="p-1.5 rounded hover:bg-[#F87171]/10 text-ink-600 hover:text-[#F87171]"
     >
       <Trash2 className="h-4 w-4" />
     </button>

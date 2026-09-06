@@ -58,17 +58,40 @@
 
   --color-emerald-50:  #ECFDF5;
   --color-emerald-100: #D1FAE5;
+  --color-emerald-200: #A7F3D0;
+  --color-emerald-300: #6EE7B7;
+  --color-emerald-400: #34D399;
   --color-emerald-500: #10B981;
   --color-emerald-600: #059669;
   --color-emerald-700: #047857;
+  --color-emerald-800: #065F46;
 
   --color-success:     #34D399;
   --color-success-dim: #059669;
+
+  /* ---- Additional scales ---- */
+  --color-rose-50:   #FFF1F2;
+  --color-rose-100:  #FFE4E6;
+  --color-rose-200:  #FECDD3;
+  --color-rose-300:  #FDA4AF;
+  --color-rose-400:  #FB7185;
+  --color-rose-500:  #F43F5E;
+  --color-rose-600:  #E11D48;
+  --color-rose-700:  #BE123C;
+
+  --color-pink-400:  #F472B6;
+  --color-pink-500:  #EC4899;
+  --color-pink-600:  #DB2777;
+
+  --color-teal-400:  #2DD4BF;
+  --color-teal-500:  #14B8A6;
+  --color-teal-600:  #0D9488;
 
   --color-cyan-50:  #ECFEFF;
   --color-cyan-100: #CFFAFE;
   --color-cyan-500: #06B6D4;
   --color-cyan-600: #0891B2;
+  --color-cyan-900: #164E63;
 
   --color-violet-50:  #F5F3FF;
   --color-violet-100: #EDE9FE;
@@ -412,8 +435,6 @@ body {
 /* ================================================================
    SUCCESS / ACCENT UTILITIES
    ================================================================ */
-.text-success { color: #34D399; }
-.bg-success { background-color: #34D399; }
 
 /* ================================================================
    FOCUS STATES

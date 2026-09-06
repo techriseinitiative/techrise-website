@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDate } from "@/lib/utils";
 import { Mail, MessageSquare } from "lucide-react";
+import { UpdateInquiryStatusButton } from "./status-button";
 
 export default async function AdminInquiriesPage() {
   const inquiries = await prisma.inquiry.findMany({
@@ -37,7 +38,10 @@ export default async function AdminInquiriesPage() {
                     </a>
                   </div>
                 </div>
-                <StatusBadge status={inq.status} />
+                <div className="flex items-center gap-2 shrink-0">
+                  <UpdateInquiryStatusButton id={inq.id} currentStatus={inq.status} />
+                  <StatusBadge status={inq.status} />
+                </div>
               </div>
               <p className="text-sm text-ink-700 mt-3 leading-relaxed">{inq.message}</p>
               <div className="mt-3 pt-3 border-t border-ink-100 flex items-center justify-between text-xs text-ink-500">
