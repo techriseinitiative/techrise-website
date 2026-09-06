@@ -1,63 +1,137 @@
 # Design.md — TechRise Initiative
 
-> Note: these are starting defaults based on the brand tone (energetic, tech-forward, youth/community-driven). Swap freely once you have real brand assets or a designer's input — treat this as a placeholder design system, not final branding.
+> These are opinionated defaults for a modern tech/startup site. Swap palette values once real brand assets exist — but the *system* (how color, type, and motion are used) should hold regardless of exact hex codes.
 
 ## 1. Brand Personality
 - Energetic, optimistic, youth-driven
-- Tech-forward but approachable — not corporate/sterile
+- Tech-forward, confident — closer to a modern SaaS/startup site than a nonprofit brochure
 - Community and collaboration over individual achievement
 - Global, inclusive tone
 
-## 2. Color Palette
+## 2. Theme Direction: Dark-first
+Tech-forward orgs (Vercel, Linear, GitHub) read as more credible in **dark mode as the primary theme**, with light mode as a secondary option. Dark backgrounds make accent colors and glow effects pop — flat white backgrounds tend to look like a template. Build dark-first, then derive light mode from it.
+
+## 3. Color Palette
+
+### Dark theme (primary)
 | Role | Color | Hex | Usage |
 |---|---|---|---|
-| Primary | Electric Blue | `#2563EB` | CTAs, links, primary buttons |
-| Primary Dark | Deep Indigo | `#1E3A8A` | Header/footer backgrounds, hover states |
-| Accent | Vivid Orange | `#F97316` | Highlights, badges, "Donate" CTA |
-| Success | Green | `#16A34A` | Confirmations, success states |
-| Error | Red | `#DC2626` | Form errors, destructive actions |
-| Neutral 900 | `#111827` | Body text |
-| Neutral 500 | `#6B7280` | Secondary text |
-| Neutral 100 | `#F3F4F6` | Section backgrounds |
-| White | `#FFFFFF` | Base background |
+| Background base | Near-black | `#0A0A0F` | Page background |
+| Background elevated | Charcoal | `#13131A` | Cards, panels, nav |
+| Border/divider | Subtle gray | `#232330` | Card borders, dividers (low contrast, not white) |
+| Primary text | Off-white | `#F5F5F7` | Headings, body text (never pure `#FFF` — too harsh) |
+| Secondary text | Muted gray | `#9CA3AF` | Captions, metadata, timestamps |
+| Primary accent | Electric Indigo | `#6366F1` | CTAs, links, focus states |
+| Primary accent (hover) | Bright Indigo | `#818CF8` | Hover/active states |
+| Secondary accent | Cyan | `#22D3EE` | Secondary highlights, used in gradients with indigo |
+| Warm accent | Amber/Orange | `#F59E0B` | "Donate" CTA — deliberately warm against the cool palette so it stands out |
+| Success | Emerald | `#34D399` | Confirmations |
+| Error | Rose | `#F87171` | Form errors |
 
-Dark mode: invert neutrals (Neutral 900 background, Neutral 100 text), keep Primary/Accent roughly as-is with slightly reduced saturation.
+### Light theme (secondary)
+| Role | Hex |
+|---|---|
+| Background | `#FAFAFA` |
+| Elevated surface | `#FFFFFF` |
+| Border | `#E5E7EB` |
+| Primary text | `#111827` |
+| Secondary text | `#6B7280` |
+| Accent (same hue, darker for contrast) | `#4F46E5` |
 
-## 3. Typography
-- **Headings:** `Inter` or `Sora` (bold, modern, tech feel) — weights 600–800
-- **Body:** `Inter` — weights 400–500
-- **Scale (desktop → mobile):**
-  - H1: 48px → 32px
-  - H2: 36px → 28px
-  - H3: 24px → 20px
-  - Body: 16px → 16px (don't shrink body text on mobile)
-  - Small/caption: 14px
+**Rule:** never reuse the exact same accent shade across both themes — the dark-mode accent is usually too bright for light backgrounds (fails contrast) and needs a deeper variant.
 
-## 4. Layout & Spacing
+## 4. Text Color & Effects for the Web
+
+### Gradient text (for hero headlines only — don't overuse)
+```css
+.gradient-text {
+  background: linear-gradient(90deg, #6366F1 0%, #22D3EE 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+```
+Use this on ONE headline per page max (usually the hero H1). Applying it everywhere kills the effect.
+
+### Text on elevated cards
+Never place `Secondary text` gray directly on `Background base` — contrast is too low. Always pair text darkness/lightness with the surface it sits on, not the page background.
+
+### Glow / emphasis effect (sparingly, for CTAs or key stats)
+```css
+.glow-accent {
+  color: #818CF8;
+  text-shadow: 0 0 24px rgba(99, 102, 241, 0.5);
+}
+```
+Good for a hero stat like "500+ learners" — bad for body paragraphs (hurts readability).
+
+### Link styling
+- Default: `Primary accent` color, no underline
+- Hover: brighten to `Primary accent (hover)` + underline fades in (`text-decoration-thickness` transition) — avoids the jarring "instant underline" jump
+
+### Selection color (small detail, easy to skip, cheap to add)
+```css
+::selection {
+  background: #6366F1;
+  color: #F5F5F7;
+}
+```
+
+## 5. Typography
+- **Headings:** `Sora` or `Space Grotesk` (both have a distinct geometric/techy character — avoid generic `Inter`-for-everything, which now reads as "AI-generated template")
+- **Body:** `Inter` or `Manrope` — weights 400–500, optimized for readability at small sizes
+- **Monospace accents** (optional, nice touch for a tech brand): `JetBrains Mono` for small UI labels like "COMPETITION" badges or code snippets in project showcases
+
+**Scale (desktop → mobile):**
+| Level | Desktop | Mobile |
+|---|---|---|
+| H1 | 56px / 700 weight | 34px |
+| H2 | 40px | 28px |
+| H3 | 26px | 22px |
+| Body | 17px | 16px |
+| Small/caption | 14px | 13px |
+
+Line height: 1.1–1.2 for headings, 1.6 for body text (dark backgrounds need slightly more line-height than light ones for readability).
+
+## 6. Layout & Spacing
 - Base spacing unit: 4px (Tailwind default scale)
-- Max content width: 1280px, centered, with 24px side padding on mobile
-- Section vertical rhythm: 80–120px desktop, 48–64px mobile
-- Cards: 12px border-radius, subtle shadow (`shadow-md`), 1px neutral border in light mode
+- Max content width: 1280px, centered, 24px side padding on mobile
+- Section vertical rhythm: 96–140px desktop, 56–72px mobile — dark-themed sites read better with *more* breathing room than light ones, since dense dark sections feel heavier
+- Cards: 16px border-radius (slightly larger than a typical corporate site — softer, more "product" feeling), 1px `Border/divider` outline, no heavy drop shadows in dark mode (shadows barely read on dark backgrounds — use a subtle inner border-glow instead)
 
-## 5. Components Style Direction
-- **Buttons:** rounded-lg, solid primary for main CTA, outline for secondary, generous padding (px-6 py-3)
-- **Cards:** used for events, projects, blog posts — image on top, content below, hover lift effect (subtle scale/shadow)
-- **Forms:** clear labels above inputs, inline validation messages, focus rings in Primary color
-- **Navigation:** sticky top nav, logo left, links center/right, "Donate" as a distinct accent-colored button (always visually separated from other nav items)
+```css
+.card {
+  border: 1px solid #232330;
+  border-radius: 16px;
+  background: #13131A;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.card:hover {
+  border-color: #6366F1;
+  transform: translateY(-4px);
+}
+```
 
-## 6. Key Page Direction
-- **Home:** Hero with mission statement + CTA, followed by "What We Do" (3-column: Learn / Build / Connect), featured events, featured projects, donate CTA banner, footer
-- **Events/Projects listing:** Grid of cards, filter/sort bar on top (later phase can add category filters)
-- **Donate page:** Simple, low-friction — amount selector, one clear "Donate Now" button, trust indicators (secure payment badge)
-- **Admin dashboard:** Functional over pretty — sidebar nav, data tables, minimal styling, prioritize clarity and speed over visual polish
+## 7. Motion & Micro-interactions
+Subtle motion is what separates a site that feels "designed" from one that feels like a static template:
+- **Hover lift** on cards (translateY(-4px) + border color shift, ~200ms ease) — used above
+- **Fade-in-up on scroll** for sections entering the viewport (`opacity: 0 → 1`, `translateY(16px) → 0`, ~400ms) — use a lightweight library like `framer-motion` or CSS `@starting-style`, don't animate everything at once
+- **Button press feedback**: slight scale-down (`scale(0.97)`) on `:active` for tactile feel
+- **Avoid**: parallax scrolling, autoplay carousels, animated gradients that never stop moving — these read as dated/gimmicky rather than modern
 
-## 7. Imagery & Icons
-- Icons: `lucide-react` (clean, consistent line icons)
-- Photography: real project/event photos where possible; avoid generic stock photos of "tech people pointing at screens"
-- Illustrations (optional): simple line-art style if used, matching Primary/Accent palette
+## 8. Key Page Direction
+- **Home:** Dark hero with gradient-text headline + one glowing stat, "What We Do" 3-column (Learn/Build/Connect) with icon + hover-lift cards, featured events/projects in horizontal scroll or grid, warm-accent donate banner as a visual break from the cool palette, footer
+- **Events/Projects listing:** Grid of hover-lift cards on elevated surface color, filter bar with pill-style toggle buttons (rounded-full, active state in Primary accent)
+- **Donate page:** Keep this page *lighter visually* even in dark mode — less clutter, one clear amount selector, the Amber accent button, trust badge — donation pages convert worse when they're visually busy
+- **Admin dashboard:** Can use light mode by default even if the public site is dark — admins spend hours in it, and dense data tables are easier to scan on light backgrounds. Functional over stylish here.
 
-## 8. Accessibility Notes
-- Minimum contrast ratio 4.5:1 for body text
-- All interactive elements reachable via keyboard, visible focus states
+## 9. Imagery & Icons
+- Icons: `lucide-react`, rendered in `Secondary text` gray by default, `Primary accent` on hover/active
+- Photography: real project/event photos with a subtle dark overlay gradient when used as hero/section backgrounds, so text stays legible on top
+- Avoid generic "diverse people pointing at laptop" stock photography — favor real screenshots, real project photos, or simple abstract gradient/mesh backgrounds instead
+
+## 10. Accessibility Notes
+- Minimum contrast ratio 4.5:1 for body text — double-check gradient text and glow effects against WCAG contrast, since they're the easiest place to accidentally fail this
+- All interactive elements reachable via keyboard, with a visible focus ring (use `Primary accent` at full opacity — don't rely on the default browser outline, but don't remove it without replacing it either)
 - Alt text required for all meaningful images (enforce in CMS/admin forms)
-- Don't rely on color alone to convey state (pair with icons/text)
+- Respect `prefers-reduced-motion` — disable scroll-fade and hover-lift animations for users who've set that OS-level preference
