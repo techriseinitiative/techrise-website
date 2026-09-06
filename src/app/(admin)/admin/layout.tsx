@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-ink-50 flex">
       {/* Sidebar */}
-      <aside className="w-64 shrink-0 bg-white border-r border-ink-200 flex flex-col">
+      <aside className="w-56 lg:w-64 shrink-0 bg-white border-r border-ink-200 flex flex-col">
         {/* Logo */}
         <div className="px-5 py-4 border-b border-ink-200">
           <Link href="/" className="flex items-center gap-2 font-display font-bold text-ink-900">
@@ -62,7 +62,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
-        <div className="p-8">{children}</div>
+        <div className="p-5 sm:p-8">{children}</div>
       </main>
     </div>
   );

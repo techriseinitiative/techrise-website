@@ -46,7 +46,6 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${sora.variable} ${jetbrainsMono.variable}`}
-      style={{ colorScheme: "dark" }}
     >
       <body className="min-h-screen flex flex-col antialiased">
         <Navbar />

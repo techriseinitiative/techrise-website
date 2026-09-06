@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Menu, X, Rocket, Heart } from "lucide-react";
 
 const NAV_LINKS = [
@@ -15,23 +16,10 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const pathname = usePathname();
 
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? "nav-surface shadow-lg shadow-black/20"
-          : "bg-transparent"
-      }`}
-    >
+    <header className="sticky top-0 z-50 w-full nav-surface shadow-lg shadow-black/20">
       <nav className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10 h-[68px] flex items-center justify-between">
         {/* Logo */}
         <Link
@@ -54,7 +42,12 @@ export default function Navbar() {
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="px-4 py-2 text-sm font-medium text-[#9CA3AF] hover:text-[#F5F5F7] transition-colors rounded-lg hover:bg-white/5"
+                aria-current={pathname === link.href ? "page" : undefined}
+                className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-white/5 ${
+                  pathname === link.href
+                    ? "text-[#F5F5F7] bg-white/10"
+                    : "text-[#9CA3AF] hover:text-[#F5F5F7]"
+                }`}
               >
                 {link.label}
               </Link>
@@ -99,7 +92,10 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="px-4 py-3 text-base font-medium text-[#9CA3AF] hover:text-[#F5F5F7] hover:bg-white/5 rounded-xl transition"
+                aria-current={pathname === link.href ? "page" : undefined}
+                className={`px-4 py-3 text-base font-medium hover:text-[#F5F5F7] hover:bg-white/5 rounded-xl transition ${
+                  pathname === link.href ? "text-[#F5F5F7] bg-white/10" : "text-[#9CA3AF]"
+                }`}
               >
                 {link.label}
               </Link>
