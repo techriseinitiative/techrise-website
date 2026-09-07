@@ -19,6 +19,10 @@ const FOOTER_LINKS = {
     { label: "Sponsorship", href: "/contact" },
     { label: "Partner with us", href: "/contact" },
   ],
+  Legal: [
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Privacy Policy", href: "/privacy" },
+  ],
 };
 
 export default function Footer() {

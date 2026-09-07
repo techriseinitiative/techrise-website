@@ -1,63 +1,27 @@
 import Link from "next/link";
-import { Code2, GitBranch, ArrowRight, Sparkles, Filter, Users, ExternalLink } from "lucide-react";
+import { Code2, ArrowRight, Sparkles, Users, ExternalLink } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "Project Showcase",
   description: "Real projects built by the TechRise community — solving real problems.",
 };
 
-const PROJECTS = [
-  {
-    title: "AquaSense",
-    category: "AI · Sustainability",
-    description: "Low-cost water quality monitoring system using edge ML on a $5 microcontroller. Deployed in 14 villages across South Asia.",
-    contributors: ["Aarav M.", "Priya S.", "Daniel O."],
-    link: "https://github.com/techrise/aquasense",
-    color: "from-[#14B8A6] to-[#5ECAD4]",
-  },
-  {
-    title: "VerbaLearn",
-    category: "EdTech",
-    description: "Voice-first literacy app for first-graders in low-bandwidth regions. Works offline. Currently used in 200+ schools.",
-    contributors: ["Sofia G.", "Marcus L."],
-    link: "https://github.com/techrise/verbalearn",
-    color: "from-[#0F766E] to-[#14B8A6]",
-  },
-  {
-    title: "GridShare",
-    category: "Energy · Open Source",
-    description: "Peer-to-peer solar energy trading platform. Enables households with rooftop solar to sell excess energy to neighbors.",
-    contributors: ["Aarav M.", "Lina K.", "Yusuf A.", "Sara P."],
-    link: "https://github.com/techrise/gridshare",
-    color: "from-[#F57342] to-[#FB923C]",
-  },
-  {
-    title: "MedTranslate",
-    category: "Health · AI",
-    description: "Real-time medical translation app for non-English speaking patients in emergency rooms. HIPAA-compliant.",
-    contributors: ["Daniel O.", "Emma T."],
-    link: "https://github.com/techrise/medtranslate",
-    color: "from-[#F57342] to-[#E11D48]",
-  },
-  {
-    title: "CodeMentor Match",
-    category: "Developer Tools",
-    description: "AI-powered matching system that pairs early-career developers with mentors based on learning style and goals.",
-    contributors: ["Priya S.", "Wei C."],
-    link: "https://github.com/techrise/mentor-match",
-    color: "from-[#22C55E] to-[#059669]",
-  },
-  {
-    title: "FarmOS",
-    category: "Agriculture",
-    description: "Open-source farm management system for smallholder farmers. Tracks crops, weather, and yields across mobile and SMS.",
-    contributors: ["Lina K.", "Marcus L.", "Aarav M."],
-    link: "https://github.com/techrise/farmos",
-    color: "from-[#EAB308] to-[#F59E0B]",
-  },
+const gradients = [
+  "from-[#14B8A6] to-[#5ECAD4]",
+  "from-[#0F766E] to-[#14B8A6]",
+  "from-[#F57342] to-[#FB923C]",
+  "from-[#F57342] to-[#E11D48]",
+  "from-[#22C55E] to-[#059669]",
+  "from-[#EAB308] to-[#F59E0B]",
 ];
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await prisma.project.findMany({
+    where: { status: "APPROVED" },
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
     <>
       {/* HERO */}
@@ -82,86 +46,86 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* FILTER */}
-      <section className="border-y border-[#1F2937] bg-[#111827]/90 sticky top-16 z-30 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10 py-4 flex items-center gap-3 overflow-x-auto">
-          <Filter className="h-5 w-5 text-[#6B7280] shrink-0" />
-          {["All", "AI", "EdTech", "Sustainability", "Health", "Developer Tools"].map((f, i) => (
-            <button
-              key={f}
-              className={`shrink-0 rounded-lg px-4 py-1.5 text-sm font-semibold transition ${
-                i === 0
-                  ? "bg-[#0F766E] text-white"
-                  : "bg-[#1F2937] text-[#9CA3AF] hover:bg-[#374151] hover:text-[#F9FAFB]"
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-      </section>
-
       {/* PROJECTS GRID */}
       <section className="py-16 sm:py-20 bg-[#0A0E14]">
         <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {PROJECTS.map((p, idx) => (
-              <article
-                key={p.title}
-                className="card-interactive group overflow-hidden"
-              >
-                <div className={`relative h-44 bg-gradient-to-br ${p.color} overflow-hidden`}>
-                  <div className="absolute inset-0 bg-pattern-dots opacity-20" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Code2 className="h-16 w-16 text-white/30 group-hover:scale-110 transition-transform" strokeWidth={1.5} />
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <p className="text-[10px] font-bold tracking-widest uppercase text-[#5ECAD4]">
-                    {p.category}
-                  </p>
-                  <h3 className="mt-1 font-display font-bold text-2xl text-[#F9FAFB]">
-                    {p.title}
-                  </h3>
-                  <p className="mt-3 text-sm text-[#9CA3AF] leading-relaxed">
-                    {p.description}
-                  </p>
-
-                  <div className="mt-4 flex items-center gap-2 text-sm text-[#9CA3AF]">
-                    <Users className="h-4 w-4 text-[#6B7280]" />
-                    <span>{p.contributors.length} contributor{p.contributors.length !== 1 ? 's' : ''}</span>
-                  </div>
-
-                  <div className="mt-5 pt-5 border-t border-[#1F2937] flex items-center justify-between">
-                    <div className="flex -space-x-2">
-                      {p.contributors.slice(0, 3).map((c, i) => {
-                        const colors = ["bg-[#F57342]", "bg-[#22C55E]", "bg-[#EAB308]"];
-                        return (
-                          <span
-                            key={i}
-                            className={`inline-flex h-7 w-7 items-center justify-center rounded-full ${colors[i % 3]} border-2 border-[#1A2332] text-white text-xs font-bold`}
-                          >
-                            {c[0]}
-                          </span>
-                        );
-                      })}
+          {projects.length === 0 ? (
+            <div className="rounded-2xl bg-[#111827] border border-[#374151] p-12 text-center">
+              <Sparkles className="h-10 w-10 text-[#5ECAD4] mx-auto mb-3" />
+              <p className="font-display font-bold text-xl text-[#F9FAFB]">No projects yet</p>
+              <p className="text-sm text-[#9CA3AF] mt-2">Check back soon as the community keeps building.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {projects.map((p, idx) => {
+                const cover = p.imageUrls[0];
+                const color = gradients[idx % gradients.length];
+                return (
+                  <Link
+                    key={p.id}
+                    href={`/projects/${p.slug}`}
+                    className="card-interactive group overflow-hidden"
+                  >
+                    <div className={`relative h-44 ${cover ? "bg-[#111827]" : `bg-gradient-to-br ${color}`} overflow-hidden`}>
+                      {cover ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={cover} alt={p.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <>
+                          <div className="absolute inset-0 bg-pattern-dots opacity-20" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Code2 className="h-16 w-16 text-white/30 group-hover:scale-110 transition-transform" strokeWidth={1.5} />
+                          </div>
+                        </>
+                      )}
                     </div>
-                    <a
-                      href={p.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm font-bold text-[#5ECAD4] hover:text-[#14B8A6] group/link transition"
-                    >
-                      <GitBranch className="h-4 w-4" />
-                      View
-                      <ExternalLink className="h-3.5 w-3.5 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
-                    </a>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+
+                    <div className="p-6">
+                      <h3 className="font-display font-bold text-2xl text-[#F9FAFB]">
+                        {p.title}
+                      </h3>
+                      <p className="mt-3 text-sm text-[#9CA3AF] leading-relaxed line-clamp-2">
+                        {p.description}
+                      </p>
+
+                      <div className="mt-4 flex items-center gap-2 text-sm text-[#9CA3AF]">
+                        <Users className="h-4 w-4 text-[#6B7280]" />
+                        <span>
+                          {p.contributors.length} contributor{p.contributors.length !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+
+                      <div className="mt-5 pt-5 border-t border-[#1F2937] flex items-center justify-between">
+                        <div className="flex -space-x-2">
+                          {p.contributors.slice(0, 3).map((c, i) => {
+                            const colors = ["bg-[#F57342]", "bg-[#22C55E]", "bg-[#EAB308]"];
+                            return (
+                              <span
+                                key={i}
+                                className={`inline-flex h-7 w-7 items-center justify-center rounded-full ${colors[i % 3]} border-2 border-[#1A2332] text-white text-xs font-bold`}
+                              >
+                                {c[0]?.toUpperCase()}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        {p.externalLink ? (
+                          <span
+                            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#5ECAD4] group-hover:text-[#14B8A6] transition"
+                          >
+                            View
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </span>
+                        ) : (
+                          <ArrowRight className="h-5 w-5 text-[#6B7280] group-hover:text-[#5ECAD4] group-hover:translate-x-1 transition-all" />
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

@@ -75,11 +75,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  registrations EventRegistration[]
-  donations     Donation[]
-  inquiries     Inquiry[]
-  blogPosts     BlogPost[]
-  projects      Project[]
+  registrations      EventRegistration[]
+  donations          Donation[]
+  inquiries          Inquiry[]
+  blogPosts          BlogPost[]
+  projects           Project[]
+  passwordResetTokens PasswordResetToken[]
 
   @@index([email])
 }
@@ -223,7 +224,25 @@ model Donation {
 }
 
 // ============================================================
-// Account / Session (Auth.js — for later phase)
+// Password Reset Token
+// ============================================================
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  userId     String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([expires])
+}
+
+// ============================================================
+// Account / Session (Auth.js)
 // ============================================================
 
 model Account {

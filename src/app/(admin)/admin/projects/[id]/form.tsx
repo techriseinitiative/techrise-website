@@ -1,164 +1,108 @@
 "use client";
 
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Save, Plus, Trash2 } from "lucide-react";
-import { createProjectAction, updateProjectAction } from "@/actions/projects";
-import { useState } from "react";
+import { Loader2, Save, ExternalLink } from "lucide-react";
+import { updateProjectAction } from "@/actions/projects";
 import type { Project } from "@prisma/client";
 
 export function ProjectForm({ project }: { project?: Project }) {
   const [pending, startTransition] = useTransition();
-  const [contributors, setContributors] = useState<string[]>(
-    project?.contributors ?? [""]
-  );
-  const [imageUrls, setImageUrls] = useState<string[]>(
-    project?.imageUrls ?? [""]
-  );
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
     const fd = new FormData(e.currentTarget);
-    // Join arrays back to comma-separated strings for the action
-    fd.set("contributors", contributors.filter(Boolean).join(","));
-    fd.set("imageUrls", imageUrls.filter(Boolean).join(","));
     if (project) fd.set("id", project.id);
 
-    const action = project ? updateProjectAction : createProjectAction;
     startTransition(async () => {
+      const { updateProjectAction, createProjectAction } = await import("@/actions/projects");
+      const action = project ? updateProjectAction : createProjectAction;
       const result = await action(fd);
       if (result?.success) {
         router.push("/admin/projects");
       } else {
-        alert(result?.error || "Failed to save project");
+        setError(result?.error ?? "Failed to save project");
       }
     });
   };
 
-  const addContributor = () => setContributors((c) => [...c, ""]);
-  const removeContributor = (i: number) =>
-    setContributors((c) => c.filter((_, idx) => idx !== i));
-  const updateContributor = (i: number, val: string) =>
-    setContributors((c) => c.map((x, idx) => (idx === i ? val : x)));
-
-  const addImage = () => setImageUrls((urls) => [...urls, ""]);
-  const removeImage = (i: number) =>
-    setImageUrls((urls) => urls.filter((_, idx) => idx !== i));
-  const updateImage = (i: number, val: string) =>
-    setImageUrls((urls) => urls.map((x, idx) => (idx === i ? val : x)));
-
   return (
     <form onSubmit={onSubmit} className="space-y-5">
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">{error}</div>
+      )}
       <div>
         <label className="block text-sm font-semibold text-ink-700 mb-2">Title</label>
         <input
           name="title"
           defaultValue={project?.title ?? ""}
           required
-          placeholder="e.g. AquaSense"
-          className="w-full rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition"
+          className="w-full rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 outline-none"
         />
       </div>
-
       <div>
         <label className="block text-sm font-semibold text-ink-700 mb-2">Description</label>
         <textarea
           name="description"
+          rows={5}
           defaultValue={project?.description ?? ""}
-          rows={4}
           required
-          placeholder="What does this project do?"
-          className="w-full rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition resize-none"
+          className="w-full rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 outline-none resize-none"
         />
       </div>
-
-      {/* Contributors */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-semibold text-ink-700">Contributors</label>
-          <button
-            type="button"
-            onClick={addContributor}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 transition"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add
-          </button>
-        </div>
-        <div className="space-y-2">
-          {contributors.map((c, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <input
-                type="text"
-                value={c}
-                onChange={(e) => updateContributor(i, e.target.value)}
-                placeholder="Full name"
-                className="flex-1 rounded-lg border border-ink-200 bg-white px-3.5 py-2 text-sm focus:border-primary-500 outline-none transition"
-              />
-              {contributors.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeContributor(i)}
-                  className="p-1.5 rounded hover:bg-[#F87171]/10 text-ink-400 hover:text-[#F87171] transition"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-ink-400 mt-1.5">Add each contributor&apos;s full name</p>
-      </div>
-
-      {/* Image URLs */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-semibold text-ink-700">Image URLs</label>
-          <button
-            type="button"
-            onClick={addImage}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 transition"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add image
-          </button>
-        </div>
-        <div className="space-y-2">
-          {imageUrls.map((url, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <input
-                type="url"
-                value={url}
-                onChange={(e) => updateImage(i, e.target.value)}
-                placeholder="https://..."
-                className="flex-1 rounded-lg border border-ink-200 bg-white px-3.5 py-2 text-sm focus:border-primary-500 outline-none transition"
-              />
-              {imageUrls.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  className="p-1.5 rounded hover:bg-[#F87171]/10 text-ink-400 hover:text-[#F87171] transition"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-ink-400 mt-1.5">Enter image URLs for the project showcase</p>
-      </div>
-
-      <div>
-        <label className="block text-sm font-semibold text-ink-700 mb-2">External link (GitHub / demo)</label>
+        <label className="block text-sm font-semibold text-ink-700 mb-2">
+          Cover images <span className="text-ink-400 font-normal">(comma-separated URLs)</span>
+        </label>
         <input
-          type="url"
+          name="imageUrls"
+          type="text"
+          defaultValue={project?.imageUrls?.join(", ") ?? ""}
+          placeholder="https://..., https://..."
+          className="w-full rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 outline-none"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-semibold text-ink-700 mb-2">External link <span className="text-ink-400 font-normal">(GitHub, demo)</span></label>
+        <input
           name="externalLink"
+          type="url"
           defaultValue={project?.externalLink ?? ""}
           placeholder="https://github.com/..."
-          className="w-full rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition"
+          className="w-full rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 outline-none"
         />
       </div>
-
+      <div>
+        <label className="block text-sm font-semibold text-ink-700 mb-2">
+          Contributors <span className="text-ink-400 font-normal">(comma-separated)</span>
+        </label>
+        <input
+          name="contributors"
+          type="text"
+          defaultValue={project?.contributors?.join(", ") ?? ""}
+          placeholder="Aarav M., Priya S., Daniel O."
+          required
+          className="w-full rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 outline-none"
+        />
+      </div>
+      {project && (
+        <div>
+          <label className="block text-sm font-semibold text-ink-700 mb-2">Status</label>
+          <select
+            name="status"
+            defaultValue={project.status}
+            className="rounded-lg border border-ink-200 bg-white px-3.5 py-2.5 text-sm focus:border-primary-500 outline-none"
+          >
+            <option value="PENDING">Pending</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+        </div>
+      )}
       <div className="flex items-center gap-3 pt-4 border-t border-ink-100">
         <button
           type="submit"
@@ -166,7 +110,7 @@ export function ProjectForm({ project }: { project?: Project }) {
           className="inline-flex items-center gap-2 rounded-full bg-ink-900 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ink-800 transition disabled:opacity-50"
         >
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          {project ? "Save changes" : "Create project"}
+          {project ? "Save changes" : "Add project"}
         </button>
         <Link href="/admin/projects" className="text-sm font-semibold text-ink-600 hover:text-ink-900">Cancel</Link>
       </div>

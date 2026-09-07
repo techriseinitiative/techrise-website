@@ -10,19 +10,42 @@ import {
   Target,
   Check,
   Trophy,
-  GitBranch,
   Quote,
+  ExternalLink,
 } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const [featuredEvents, featuredProjects, stats] = await Promise.all([
+    prisma.event.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: { startDate: "asc" },
+      take: 3,
+      include: { _count: { select: { registrations: true } } },
+    }),
+    prisma.project.findMany({
+      where: { status: "APPROVED" },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+    }),
+    Promise.all([
+      prisma.user.count(),
+      prisma.project.count({ where: { status: "APPROVED" } }),
+      prisma.donation.aggregate({ where: { status: "SUCCEEDED" }, _sum: { amount: true } }),
+    ]),
+  ]);
+
+  const [userCount, projectCount, donationAgg] = stats;
+  const totalRaised = (donationAgg._sum.amount ?? 0) / 100;
+
   return (
     <>
-      <Hero />
+      <Hero userCount={userCount} projectCount={projectCount} />
       <ValueProposition />
       <ProgramsShowcase />
-      <ImpactStats />
-      <FeaturedEvents />
-      <FeaturedProjects />
+      <ImpactStats userCount={userCount} projectCount={projectCount} totalRaised={totalRaised} />
+      <FeaturedEvents events={featuredEvents} />
+      <FeaturedProjects projects={featuredProjects} />
       <Testimonials />
       <CTASection />
     </>
@@ -32,7 +55,7 @@ export default function Home() {
 /* ============================================================
    HERO
 ============================================================ */
-function Hero() {
+function Hero({ userCount, projectCount }: { userCount: number; projectCount: number }) {
   return (
     <section className="relative min-h-[88vh] flex items-center overflow-hidden bg-[#0A0E14]">
       {/* Subtle background pattern */}
@@ -53,7 +76,7 @@ function Hero() {
             </div>
 
             <h1 className="mt-8 font-display font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.1] text-[#F9FAFB] animate-fade-up delay-100">
-              Join 2,400+ learners <br />
+              Join {userCount.toLocaleString()}+ learners <br />
               <span className="text-[#0F766E]">building real</span>{" "}
               <span className="gradient-text">skills.</span>
             </h1>
@@ -76,9 +99,9 @@ function Hero() {
             {/* Quick stats */}
             <div className="mt-12 grid grid-cols-3 gap-8 animate-fade-up delay-400">
               {[
-                { value: "2,400+", label: "Students" },
+                { value: userCount.toLocaleString() + "+", label: "Students" },
                 { value: "48", label: "Countries" },
-                { value: "120+", label: "Projects" },
+                { value: projectCount.toLocaleString() + "+", label: "Projects" },
               ].map((stat) => (
                 <div key={stat.label}>
                   <p className="font-display font-bold text-3xl text-[#F9FAFB]">{stat.value}</p>
@@ -223,7 +246,7 @@ function ValueProposition() {
             One mission. <span className="gradient-text">Four pillars.</span>
           </h2>
           <p className="mt-4 text-lg text-[#9CA3AF]">
-            TechRise is more than a community — it's an ecosystem designed to turn curiosity into capability.
+            TechRise is more than a community — it&apos;s an ecosystem designed to turn curiosity into capability.
           </p>
         </div>
 
@@ -272,11 +295,11 @@ function ProgramsShowcase() {
               From first line of code to launching your startup.
             </h2>
             <p className="mt-5 text-lg text-[#9CA3AF] leading-relaxed">
-              Whether you're just getting started or already shipping, our programs meet you where you are and push you further.
+              Whether you&apos;re just getting started or already shipping, our programs meet you where you are and push you further.
             </p>
 
             <div className="mt-8 space-y-4 stagger">
-              {programs.map((item, i) => (
+              {programs.map((item) => (
                 <div key={item.title} className="flex gap-4 group">
                   <div className="shrink-0 h-10 w-10 rounded-lg bg-[#0F766E]/15 border border-[#0F766E]/25 flex items-center justify-center group-hover:bg-[#0F766E]/25 transition">
                     <item.icon className="h-5 w-5 text-[#5ECAD4]" />
@@ -336,7 +359,15 @@ function ProgramsShowcase() {
 /* ============================================================
    IMPACT STATS
 ============================================================ */
-function ImpactStats() {
+function ImpactStats({
+  userCount,
+  projectCount,
+  totalRaised,
+}: {
+  userCount: number;
+  projectCount: number;
+  totalRaised: number;
+}) {
   return (
     <section className="relative section-pad bg-[#0A0E14] overflow-hidden">
       <div className="absolute inset-0 bg-pattern-dots pointer-events-none opacity-50" />
@@ -353,10 +384,10 @@ function ImpactStats() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger">
           {[
-            { value: "2,400+", label: "Active Learners", icon: Users },
-            { value: "120+", label: "Shipped Projects", icon: Code2 },
+            { value: userCount.toLocaleString() + "+", label: "Active Learners", icon: Users },
+            { value: projectCount.toLocaleString() + "+", label: "Shipped Projects", icon: Code2 },
             { value: "48", label: "Countries Reached", icon: Globe },
-            { value: "$180K", label: "Donated", icon: Heart },
+            { value: `$${totalRaised >= 1000 ? (totalRaised / 1000).toFixed(0) + "K" : totalRaised.toLocaleString()}`, label: "Donated", icon: Heart },
           ].map((s) => (
             <div
               key={s.label}
@@ -376,32 +407,30 @@ function ImpactStats() {
 /* ============================================================
    FEATURED EVENTS
 ============================================================ */
-function FeaturedEvents() {
-  const events = [
-    {
-      title: "Spring Buildathon 2026",
-      type: "Buildathon",
-      date: "Mar 15 — 17, 2026",
-      location: "Online · Global",
-      status: "Registration Open",
-      tag: "EVENT",
-    },
-    {
-      title: "AI for Good Challenge",
-      type: "Competition",
-      date: "Apr 5 — Jun 1, 2026",
-      location: "Hybrid · 12 cities",
-      status: "Coming Soon",
-      tag: "COMPETITION",
-    },
-    {
-      title: "Full-Stack in 6 Weeks",
-      type: "Program",
-      date: "Rolling Admissions",
-      location: "Online · Self-paced",
-      status: "Enrolling Now",
-      tag: "PROGRAM",
-    },
+function FeaturedEvents({
+  events,
+}: {
+  events: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    description: string;
+    type: string;
+    startDate: Date;
+    location: string | null;
+    capacity: number | null;
+    _count: { registrations: number };
+  }>;
+}) {
+  const typeLabel: Record<string, string> = {
+    EVENT: "EVENT",
+    COMPETITION: "COMPETITION",
+  };
+
+  const gradients = [
+    "from-[#0F766E] to-[#14B8A6]",
+    "from-[#F57342] to-[#FB923C]",
+    "from-[#14B8A6] to-[#5ECAD4]",
   ];
 
   return (
@@ -414,7 +443,7 @@ function FeaturedEvents() {
               Featured Programs
             </div>
             <h2 className="mt-4 font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">
-              What's happening now
+              What&apos;s happening now
             </h2>
           </div>
           <Link
@@ -427,25 +456,20 @@ function FeaturedEvents() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
-          {events.map((e, idx) => (
+          {events.slice(0, 3).map((e, idx) => (
             <Link
-              key={e.title}
-              href="/events"
+              key={e.id}
+              href={`/events/${e.slug}`}
               className="card-interactive group overflow-hidden block"
             >
               {/* Header */}
-              <div className={`relative h-40 p-5 ${
-                idx === 0 ? "bg-gradient-to-br from-[#0F766E] to-[#14B8A6]" :
-                idx === 1 ? "bg-gradient-to-br from-[#F57342] to-[#FB923C]" :
-                "bg-gradient-to-br from-[#14B8A6] to-[#5ECAD4]"
-              }`}>
+              <div className={`relative h-40 p-5 bg-gradient-to-br ${gradients[idx % gradients.length]}`}>
                 <div className="absolute inset-0 bg-pattern-dots opacity-20" />
                 <div className="relative h-full flex flex-col justify-between">
                   <span className="self-start text-[10px] font-bold tracking-widest text-white bg-white/20 px-2.5 py-1 rounded">
-                    {e.tag}
+                    {typeLabel[e.type] ?? e.type}
                   </span>
                   <div>
-                    <p className="text-xs font-semibold text-white/80">{e.type}</p>
                     <p className="font-display font-bold text-xl text-white mt-1 leading-tight">
                       {e.title}
                     </p>
@@ -456,24 +480,18 @@ function FeaturedEvents() {
               <div className="p-5">
                 <div className="flex items-center gap-2 text-sm text-[#9CA3AF]">
                   <Calendar className="h-4 w-4 text-[#6B7280]" />
-                  <span>{e.date}</span>
+                  <span>{new Date(e.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-sm text-[#9CA3AF]">
-                  <Globe className="h-4 w-4 text-[#6B7280]" />
-                  <span>{e.location}</span>
-                </div>
+                {e.location && (
+                  <div className="mt-2 flex items-center gap-2 text-sm text-[#9CA3AF]">
+                    <Globe className="h-4 w-4 text-[#6B7280]" />
+                    <span>{e.location}</span>
+                  </div>
+                )}
                 <div className="mt-5 flex items-center justify-between">
-                  <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
-                    e.status === "Registration Open" || e.status === "Enrolling Now"
-                      ? "text-[#22C55E]"
-                      : "text-[#9CA3AF]"
-                  }`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${
-                      e.status === "Registration Open" || e.status === "Enrolling Now"
-                        ? "bg-[#22C55E] animate-pulse"
-                        : "bg-[#6B7280]"
-                    }`} />
-                    {e.status}
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#22C55E]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />
+                    Register now
                   </span>
                   <ArrowRight className="h-5 w-5 text-[#6B7280] group-hover:text-[#5ECAD4] group-hover:translate-x-1 transition-all" />
                 </div>
@@ -489,26 +507,22 @@ function FeaturedEvents() {
 /* ============================================================
    FEATURED PROJECTS
 ============================================================ */
-function FeaturedProjects() {
-  const projects = [
-    {
-      title: "AquaSense",
-      tag: "AI · Sustainability",
-      desc: "Low-cost water quality monitoring using edge ML on a $5 microcontroller.",
-      contributors: ["Aarav M.", "Priya S.", "Daniel O."],
-    },
-    {
-      title: "VerbaLearn",
-      tag: "EdTech",
-      desc: "Voice-first literacy app for first-graders in low-bandwidth regions.",
-      contributors: ["Sofia G.", "Marcus L."],
-    },
-    {
-      title: "GridShare",
-      tag: "Energy · Open Source",
-      desc: "Peer-to-peer solar energy trading platform deployed in 3 villages.",
-      contributors: ["Aarav M.", "Lina K.", "Yusuf A."],
-    },
+function FeaturedProjects({
+  projects,
+}: {
+  projects: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    description: string;
+    contributors: string[];
+    externalLink: string | null;
+  }>;
+}) {
+  const gradients = [
+    "from-[#14B8A6] to-[#5ECAD4]",
+    "from-[#0F766E] to-[#14B8A6]",
+    "from-[#F57342] to-[#FB923C]",
   ];
 
   return (
@@ -537,27 +551,24 @@ function FeaturedProjects() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
-          {projects.map((p, idx) => (
-            <div key={p.title} className="card-interactive group overflow-hidden">
-              <div className={`relative h-36 overflow-hidden ${
-                idx === 0 ? "bg-gradient-to-br from-[#14B8A6] to-[#5ECAD4]" :
-                idx === 1 ? "bg-gradient-to-br from-[#0F766E] to-[#14B8A6]" :
-                "bg-gradient-to-br from-[#F57342] to-[#FB923C]"
-              }`}>
+          {projects.slice(0, 3).map((p, idx) => (
+            <Link
+              key={p.id}
+              href={`/projects/${p.slug}`}
+              className="card-interactive group overflow-hidden"
+            >
+              <div className={`relative h-36 bg-gradient-to-br ${gradients[idx % gradients.length]} overflow-hidden`}>
                 <div className="absolute inset-0 bg-pattern-dots opacity-20" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Code2 className="h-14 w-14 text-white/30 group-hover:scale-110 transition-transform" strokeWidth={1.5} />
                 </div>
               </div>
               <div className="p-5">
-                <p className="text-[10px] font-bold tracking-widest uppercase text-[#5ECAD4]">
-                  {p.tag}
-                </p>
-                <h3 className="mt-1 font-display font-bold text-2xl text-[#F9FAFB]">
+                <h3 className="font-display font-bold text-2xl text-[#F9FAFB]">
                   {p.title}
                 </h3>
-                <p className="mt-2 text-sm text-[#9CA3AF] leading-relaxed">
-                  {p.desc}
+                <p className="mt-2 text-sm text-[#9CA3AF] leading-relaxed line-clamp-2">
+                  {p.description}
                 </p>
                 <div className="mt-5 pt-5 border-t border-[#1F2937] flex items-center justify-between">
                   <div className="flex -space-x-2">
@@ -570,10 +581,23 @@ function FeaturedProjects() {
                       );
                     })}
                   </div>
-                  <ArrowRight className="h-5 w-5 text-[#6B7280] group-hover:text-[#5ECAD4] group-hover:translate-x-1 transition-all" />
+                  {p.externalLink ? (
+                    <a
+                      href={p.externalLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-bold text-[#5ECAD4] hover:text-[#14B8A6] transition"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      View
+                    </a>
+                  ) : (
+                    <ArrowRight className="h-5 w-5 text-[#6B7280] group-hover:text-[#5ECAD4] group-hover:translate-x-1 transition-all" />
+                  )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -612,7 +636,7 @@ function Testimonials() {
             Voices from the community
           </div>
           <h2 className="mt-5 font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">
-            Stories from people we've grown with.
+            Stories from people we&apos;ve grown with.
           </h2>
         </div>
 
@@ -621,7 +645,7 @@ function Testimonials() {
             <div key={q.name} className="card-interactive p-7">
               <Quote className="h-7 w-7 text-[#0F766E] mb-5" fill="currentColor" />
               <p className="text-[#9CA3AF] leading-relaxed font-medium">
-                "{q.quote}"
+                &ldquo;{q.quote}&rdquo;
               </p>
               <div className="mt-6 flex items-center gap-3 pt-5 border-t border-[#1F2937]">
                 <div className={`h-11 w-11 rounded-full flex items-center justify-center text-white font-bold text-sm ${

@@ -2,15 +2,28 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Compass, Mail, Lock, ArrowRight, Loader2, Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Compass, Mail, Lock, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { loginAction } from "@/actions/auth";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => setLoading(false), 1200);
+    setError("");
+
+    const fd = new FormData(e.currentTarget);
+    const result = await loginAction(fd);
+
+    if (!result.success) {
+      setError(result.error ?? "Login failed");
+      setLoading(false);
+    }
+    // On success, loginAction redirects via Next.js redirect()
   };
 
   return (
@@ -30,6 +43,13 @@ export default function LoginPage() {
           <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">Welcome back</h1>
           <p className="mt-2 text-[#9CA3AF]">Sign in to your account to continue.</p>
 
+          {error && (
+            <div className="mt-4 rounded-lg bg-[#F87171]/10 border border-[#F87171]/20 p-3 flex items-center gap-2 text-sm text-[#F87171]">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {error}
+            </div>
+          )}
+
           <form onSubmit={onSubmit} className="mt-8 space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-[#F9FAFB] mb-2">Email</label>
@@ -37,6 +57,7 @@ export default function LoginPage() {
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   required
                   placeholder="you@example.com"
@@ -48,12 +69,13 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label htmlFor="password" className="block text-sm font-semibold text-[#F9FAFB]">Password</label>
-                <Link href="#" className="text-xs font-semibold text-[#5ECAD4] hover:text-[#14B8A6]">Forgot?</Link>
+                <Link href="/forgot-password" className="text-xs font-semibold text-[#5ECAD4] hover:text-[#14B8A6]">Forgot?</Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
                   id="password"
+                  name="password"
                   type="password"
                   required
                   placeholder="Enter your password"
@@ -62,17 +84,19 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <label className="flex items-center gap-2 text-sm text-[#9CA3AF]">
-              <input type="checkbox" className="h-4 w-4 rounded border-[#374151] bg-[#0A0E14] text-[#0F766E] focus:ring-[#0F766E]" />
-              Keep me signed in
-            </label>
+            <div className="flex items-center gap-2 text-sm text-[#9CA3AF]">
+              <input id="remember" name="remember" type="checkbox" className="h-4 w-4 rounded border-[#374151] bg-[#0A0E14] text-[#0F766E] focus:ring-[#0F766E]" />
+              <label htmlFor="remember">Keep me signed in</label>
+            </div>
 
             <button
               type="submit"
               disabled={loading}
               className="btn-primary w-full justify-center"
             >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Sign in <ArrowRight className="h-5 w-5" /></>}
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
+                <><span>Sign in</span> <ArrowRight className="h-5 w-5" /></>
+              )}
             </button>
           </form>
 

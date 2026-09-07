@@ -2,15 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Compass, Mail, Lock, User, ArrowRight, Loader2, Heart } from "lucide-react";
+import { Compass, Mail, Lock, User, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { signUpAction } from "@/actions/auth";
 
 export default function SignupPage() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => setLoading(false), 1500);
+    setError("");
+
+    const fd = new FormData(e.currentTarget);
+    const result = await signUpAction(fd);
+
+    if (result && !result.success) {
+      setError(result.error ?? "Signup failed");
+      setLoading(false);
+    }
+    // On success, signUpAction redirects via Next.js redirect()
   };
 
   return (
@@ -30,6 +41,13 @@ export default function SignupPage() {
           <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">Start your journey</h1>
           <p className="mt-2 text-[#9CA3AF]">Create your free account and join 2,400+ learners.</p>
 
+          {error && (
+            <div className="mt-4 rounded-lg bg-[#F87171]/10 border border-[#F87171]/20 p-3 flex items-center gap-2 text-sm text-[#F87171]">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {error}
+            </div>
+          )}
+
           <form onSubmit={onSubmit} className="mt-8 space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-semibold text-[#F9FAFB] mb-2">Full name</label>
@@ -37,6 +55,7 @@ export default function SignupPage() {
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
                   id="name"
+                  name="name"
                   type="text"
                   required
                   placeholder="Your name"
@@ -51,6 +70,7 @@ export default function SignupPage() {
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   required
                   placeholder="you@example.com"
@@ -65,6 +85,7 @@ export default function SignupPage() {
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
                   id="password"
+                  name="password"
                   type="password"
                   required
                   minLength={8}
@@ -86,7 +107,9 @@ export default function SignupPage() {
               disabled={loading}
               className="btn-primary w-full justify-center"
             >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Create account <ArrowRight className="h-5 w-5" /></>}
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
+                <><span>Create account</span> <ArrowRight className="h-5 w-5" /></>
+              )}
             </button>
           </form>
 

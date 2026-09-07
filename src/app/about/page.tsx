@@ -1,17 +1,11 @@
 import Link from "next/link";
 import { Heart, Target, Eye, Compass, Users, Lightbulb, Globe, Sparkles, ArrowRight } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "About",
   description: "Learn about TechRise Initiative's mission, story, and the team behind it.",
 };
-
-const TEAM = [
-  { name: "Aarav Mehta", role: "Founder & CEO" },
-  { name: "Priya Sharma", role: "Head of Programs" },
-  { name: "Daniel Okafor", role: "Community Lead" },
-  { name: "Sofia Garcia", role: "Operations" },
-];
 
 const VALUES = [
   { icon: Heart, title: "Empathy First", desc: "We design for the student who doesn't have access to formal education, the volunteer giving their weekends, and the sponsor who wants real impact." },
@@ -20,7 +14,27 @@ const VALUES = [
   { icon: Sparkles, title: "Show, Don't Tell", desc: "We build in public, share what works, share what doesn't, and invite the community to help us iterate." },
 ];
 
-export default function AboutPage() {
+const teamGradients = [
+  "from-[#0F766E] to-[#14B8A6]",
+  "from-[#14B8A6] to-[#5ECAD4]",
+  "from-[#F57342] to-[#FB923C]",
+  "from-[#EAB308] to-[#F59E0B]",
+];
+
+export default async function AboutPage() {
+  const [admins, stats] = await Promise.all([
+    prisma.user.findMany({
+      where: { role: "ADMIN" },
+      select: { id: true, name: true, bio: true, image: true },
+    }),
+    Promise.all([
+      prisma.user.count(),
+      prisma.project.count({ where: { status: "APPROVED" } }),
+    ]),
+  ]);
+
+  const [userCount, projectCount] = stats;
+
   return (
     <>
       {/* HERO */}
@@ -66,8 +80,8 @@ export default function AboutPage() {
               {[
                 { value: "2023", label: "Founded" },
                 { value: "48", label: "Countries" },
-                { value: "2,400+", label: "Students" },
-                { value: "120+", label: "Projects" },
+                { value: userCount.toLocaleString() + "+", label: "Students" },
+                { value: projectCount.toLocaleString() + "+", label: "Projects" },
               ].map((s) => (
                 <div key={s.label} className="card-interactive rounded-2xl p-6 text-center">
                   <p className="font-display font-bold text-3xl text-[#F9FAFB]">{s.value}</p>
@@ -121,18 +135,20 @@ export default function AboutPage() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {TEAM.map((m, idx) => (
-              <div key={m.name} className="card-interactive p-6 text-center">
-                <div className={`h-32 rounded-xl bg-gradient-to-br flex items-center justify-center text-white text-4xl font-display font-bold mx-auto ${
-                  idx === 0 ? "from-[#0F766E] to-[#14B8A6]" :
-                  idx === 1 ? "from-[#14B8A6] to-[#5ECAD4]" :
-                  idx === 2 ? "from-[#F57342] to-[#FB923C]" :
-                  "from-[#EAB308] to-[#F59E0B]"
-                }`}>
-                  {m.name[0]}
+            {admins.map((m, idx) => (
+              <div key={m.id} className="card-interactive p-6 text-center">
+                <div className={`h-32 rounded-xl bg-gradient-to-br flex items-center justify-center text-white text-4xl font-display font-bold mx-auto ${teamGradients[idx % teamGradients.length]}`}>
+                  {m.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={m.image} alt={m.name} className="w-full h-full rounded-xl object-cover" />
+                  ) : (
+                    m.name[0]
+                  )}
                 </div>
                 <h3 className="mt-5 font-display font-bold text-lg text-[#F9FAFB]">{m.name}</h3>
-                <p className="text-sm text-[#9CA3AF] mt-1">{m.role}</p>
+                {m.bio && (
+                  <p className="text-xs text-[#9CA3AF] mt-1 line-clamp-2">{m.bio.split(".")[0]}.</p>
+                )}
               </div>
             ))}
           </div>

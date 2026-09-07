@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu, X, Compass, Heart, MessageCircle, UserPlus } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Menu, X, Compass, Heart, User, LogOut, ChevronDown } from "lucide-react";
+import { logoutAction } from "@/actions/auth";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -14,9 +15,23 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+  user?: { name?: string | null; role?: string | null } | null;
+}
+
+export default function Navbar({ user }: NavbarProps) {
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [, startTransition] = useTransition();
+
+  const onLogout = () => {
+    startTransition(async () => {
+      const { logoutAction: logout } = await import("@/actions/auth");
+      const fd = new FormData();
+      await logout(fd);
+    });
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full nav-surface">
@@ -57,20 +72,65 @@ export default function Navbar() {
 
         {/* Right actions */}
         <div className="hidden md:flex items-center gap-2.5">
-          <Link
-            href="/donate"
-            className="btn-ghost text-sm"
-          >
-            <Heart className="h-4 w-4" />
-            <span className="hide-mobile">Donate</span>
-          </Link>
-          <Link
-            href="/signup"
-            className="btn-primary text-sm"
-          >
-            <UserPlus className="h-4 w-4" />
-            Get Started
-          </Link>
+          {user ? (
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] transition"
+              >
+                <div className="h-7 w-7 rounded-full bg-gradient-to-br from-[#0F766E] to-[#14B8A6] flex items-center justify-center text-white text-xs font-bold">
+                  {user.name?.[0]?.toUpperCase() ?? "U"}
+                </div>
+                <span className="max-w-[100px] truncate">{user.name?.split(" ")[0]}</span>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 mt-1 w-48 rounded-xl bg-[#111827] border border-[#374151] shadow-xl overflow-hidden py-1 z-50">
+                  {user.role === "ADMIN" && (
+                    <>
+                      <Link
+                        href="/admin"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] transition"
+                      >
+                        Admin Dashboard
+                      </Link>
+                      <div className="my-1 border-t border-[#374151]" />
+                    </>
+                  )}
+                  <Link
+                    href="/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] transition"
+                  >
+                    <User className="h-4 w-4" />
+                    My Account
+                  </Link>
+                  <button
+                    onClick={() => { setMenuOpen(false); onLogout(); }}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] transition"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link href="/donate" className="btn-ghost text-sm">
+                <Heart className="h-4 w-4" />
+                <span className="hide-mobile">Donate</span>
+              </Link>
+              <Link href="/login" className="btn-ghost text-sm">
+                Sign in
+              </Link>
+              <Link href="/signup" className="btn-primary text-sm">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -103,21 +163,59 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2 pt-3 border-t border-[#1F2937]">
-              <Link
-                href="/donate"
-                onClick={() => setOpen(false)}
-                className="px-4 py-3 text-base font-medium text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] rounded-lg transition flex items-center gap-2"
-              >
-                <Heart className="h-4 w-4" />
-                Donate
-              </Link>
-              <Link
-                href="/signup"
-                onClick={() => setOpen(false)}
-                className="btn-primary justify-center text-base py-3"
-              >
-                Get Started
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/profile"
+                    onClick={() => setOpen(false)}
+                    className="px-4 py-3 text-base font-medium text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] rounded-lg transition flex items-center gap-2"
+                  >
+                    <User className="h-4 w-4" />
+                    My Account
+                  </Link>
+                  {user.role === "ADMIN" && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setOpen(false)}
+                      className="px-4 py-3 text-base font-medium text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] rounded-lg transition"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => { setOpen(false); onLogout(); }}
+                    className="px-4 py-3 text-base font-medium text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] rounded-lg transition flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/donate"
+                    onClick={() => setOpen(false)}
+                    className="px-4 py-3 text-base font-medium text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] rounded-lg transition flex items-center gap-2"
+                  >
+                    <Heart className="h-4 w-4" />
+                    Donate
+                  </Link>
+                  <Link
+                    href="/login"
+                    onClick={() => setOpen(false)}
+                    className="px-4 py-3 text-base font-medium text-[#9CA3AF] hover:text-[#F9FAFB] hover:bg-[#1F2937] rounded-lg transition"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setOpen(false)}
+                    className="btn-primary justify-center text-base py-3"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

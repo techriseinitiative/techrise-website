@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Heart, Shield, Sparkles, Check, Users, BookOpen, Rocket } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Heart, Shield, Sparkles, Check, Users, BookOpen, Rocket, Loader2, AlertCircle } from "lucide-react";
+import { createDonationCheckoutAction } from "@/actions/donation";
 
 const PRESET_AMOUNTS = [10, 25, 50, 100, 250];
 const IMPACT = [
@@ -14,31 +15,35 @@ export default function DonatePage() {
   const [amount, setAmount] = useState(50);
   const [custom, setCustom] = useState("");
   const [recurring, setRecurring] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [error, setError] = useState("");
+  const [pending, startTransition] = useTransition();
 
   const finalAmount = custom ? Number(custom) : amount;
+  const isValid = finalAmount && finalAmount >= 1;
 
-  if (submitted) {
-    return (
-      <section className="min-h-[80vh] flex items-center justify-center bg-[#0A0E14] px-6">
-        <div className="max-w-md text-center">
-          <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#22C55E] to-[#059669] shadow-lg">
-            <Check className="h-10 w-10 text-white" strokeWidth={3} />
-          </div>
-          <h1 className="mt-7 font-display font-bold text-4xl tracking-tight text-[#F9FAFB]">Thank you!</h1>
-          <p className="mt-3 text-[#9CA3AF]">
-            Your ${finalAmount} donation will be processed shortly. A receipt will be emailed to you.
-          </p>
-          <button
-            onClick={() => { setSubmitted(false); setAmount(50); setCustom(""); }}
-            className="mt-8 btn-outline"
-          >
-            Make another donation
-          </button>
-        </div>
-      </section>
-    );
-  }
+  const onSubmit = () => {
+    setError("");
+
+    if (!isValid) return;
+
+    const fd = new FormData();
+    fd.set("amount", String(finalAmount));
+    fd.set("donorName", donorName);
+    fd.set("donorEmail", donorEmail);
+    fd.set("isRecurring", String(recurring));
+
+    startTransition(async () => {
+      const result = await createDonationCheckoutAction(fd);
+      // On success, the action redirects to Stripe Checkout
+      // On error, it returns { success: false, error: ... }
+      if (result && !result.success) {
+        setError(result.error ?? "Something went wrong. Please try again.");
+      }
+      // If success, user is redirected to Stripe
+    });
+  };
 
   return (
     <>
@@ -66,6 +71,13 @@ export default function DonatePage() {
       {/* DONATION FORM */}
       <section className="py-16 sm:py-20 bg-[#0A0E14]">
         <div className="mx-auto max-w-5xl px-6 sm:px-8 lg:px-10">
+          {error && (
+            <div className="max-w-5xl mx-auto mb-6 rounded-lg bg-[#F87171]/10 border border-[#F87171]/20 p-4 flex items-center gap-3 text-sm text-[#F87171]">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {error}
+            </div>
+          )}
+
           <div className="grid lg:grid-cols-5 gap-6">
             {/* Form */}
             <div className="lg:col-span-3">
@@ -128,23 +140,31 @@ export default function DonatePage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <input
                       type="text"
-                      placeholder="Full name"
+                      placeholder="Full name (optional)"
+                      value={donorName}
+                      onChange={(e) => setDonorName(e.target.value)}
                       className="input px-3.5 py-2.5"
                     />
                     <input
                       type="email"
-                      placeholder="Email (for receipt)"
+                      placeholder="Email (optional, for receipt)"
+                      value={donorEmail}
+                      onChange={(e) => setDonorEmail(e.target.value)}
                       className="input px-3.5 py-2.5"
                     />
                   </div>
                 </div>
 
                 <button
-                  onClick={() => setSubmitted(true)}
-                  disabled={!finalAmount || finalAmount < 1}
+                  onClick={onSubmit}
+                  disabled={!isValid || pending}
                   className="mt-7 w-full btn-accent justify-center text-base py-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Heart className="h-5 w-5" fill="currentColor" />
+                  {pending ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Heart className="h-5 w-5" fill="currentColor" />
+                  )}
                   Donate ${finalAmount || 0}{recurring ? " / month" : ""}
                 </button>
 

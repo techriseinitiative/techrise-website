@@ -41,6 +41,15 @@ export const userService = {
     });
   },
 
+  async updateUserPassword(userId: string, newPassword: string) {
+    const passwordHash = await hash(newPassword, 12);
+    return prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+      select: { id: true },
+    });
+  },
+
   async listUsers(opts: { skip?: number; take?: number; search?: string } = {}) {
     const { skip = 0, take = 20, search } = opts;
     return prisma.user.findMany({
@@ -67,5 +76,34 @@ export const userService = {
 
   async countUsers() {
     return prisma.user.count();
+  },
+
+  /**
+   * Reset a user's password using a valid token.
+   * The token is invalidated after use.
+   */
+  async resetPassword(token: string, newPassword: string) {
+    const resetToken = await prisma.passwordResetToken.findUnique({
+      where: { token },
+    });
+
+    if (!resetToken) {
+      throw new Error("Invalid or expired reset link");
+    }
+
+    if (resetToken.expires < new Date()) {
+      // Clean up expired token
+      await prisma.passwordResetToken.delete({ where: { id: resetToken.id } });
+      throw new Error("This reset link has expired");
+    }
+
+    await this.updateUserPassword(resetToken.userId, newPassword);
+
+    // Invalidate the used token
+    await prisma.passwordResetToken.delete({
+      where: { id: resetToken.id },
+    });
+
+    return { success: true };
   },
 };
