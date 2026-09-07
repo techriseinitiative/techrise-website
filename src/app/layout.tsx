@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Sora, JetBrains_Mono } from "next/font/google";
+import { Inter, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,10 +10,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const sora = Sora({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-sora",
+  variable: "--font-playfair",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -45,7 +46,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${sora.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
     >
       <body className="min-h-screen flex flex-col antialiased">
         <Navbar />

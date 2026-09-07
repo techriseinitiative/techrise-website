@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, MapPin, Users, ArrowRight, Trophy, Filter } from "lucide-react";
+import { Calendar, MapPin, Users, ArrowRight, Trophy, Filter, Sparkles } from "lucide-react";
 
 export const metadata = {
   title: "Events & Competitions",
@@ -16,7 +16,7 @@ const EVENTS = [
     registered: 847,
     capacity: 1000,
     status: "Registration Open",
-    color: "from-[#6366F1] to-[#818CF8]",
+    color: "from-[#0F766E] to-[#14B8A6]",
     tag: "EVENT",
   },
   {
@@ -28,7 +28,7 @@ const EVENTS = [
     registered: 312,
     capacity: 500,
     status: "Coming Soon",
-    color: "from-[#22D3EE] to-[#06B6D4]",
+    color: "from-[#F57342] to-[#FB923C]",
     tag: "COMPETITION",
   },
   {
@@ -40,7 +40,7 @@ const EVENTS = [
     registered: 1204,
     capacity: null,
     status: "Enrolling Now",
-    color: "from-[#34D399] to-[#10B981]",
+    color: "from-[#14B8A6] to-[#5ECAD4]",
     tag: "PROGRAM",
   },
   {
@@ -52,7 +52,7 @@ const EVENTS = [
     registered: 567,
     capacity: null,
     status: "Always Open",
-    color: "from-[#A78BFA] to-[#7C3AED]",
+    color: "from-[#EAB308] to-[#F59E0B]",
     tag: "WORKSHOP",
   },
   {
@@ -64,7 +64,7 @@ const EVENTS = [
     registered: 89,
     capacity: 50,
     status: "Waitlist",
-    color: "from-[#F87171] to-[#FB7185]",
+    color: "from-[#F57342] to-[#E11D48]",
     tag: "COMPETITION",
   },
   {
@@ -76,7 +76,7 @@ const EVENTS = [
     registered: 423,
     capacity: 600,
     status: "Registration Open",
-    color: "from-[#22D3EE] to-[#0284C7]",
+    color: "from-[#3B82F6] to-[#0F766E]",
     tag: "EVENT",
   },
 ];
@@ -85,18 +85,19 @@ export default function EventsPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative pt-16 sm:pt-24 pb-12 sm:pb-16 bg-[#0A0A0F] overflow-hidden">
-        <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-        <div className="absolute inset-0 bg-hero-grid pointer-events-none" />
+      <section className="relative pt-20 sm:pt-28 pb-16 sm:pb-20 bg-[#0A0E14] overflow-hidden">
+        <div className="absolute inset-0 bg-pattern-dots pointer-events-none" />
+        <div className="absolute top-1/3 -left-32 w-[500px] h-[500px] bg-[#0F766E]/10 rounded-full blur-[150px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <div className="relative mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full badge-indigo text-xs animate-fade-up">
-              <Calendar className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-2 rounded-lg bg-[#0F766E]/15 border border-[#0F766E]/25 px-4 py-2 text-sm font-semibold text-[#5ECAD4] animate-fade-up">
+              <Calendar className="h-4 w-4" />
               Events & Competitions
             </div>
-            <h1 className="mt-6 font-display font-bold text-5xl sm:text-6xl tracking-tight text-[#F5F5F7] animate-fade-up delay-100">
-              Learn by doing. <br /><span className="gradient-text">Build with the best.</span>
+            <h1 className="mt-6 font-display font-bold text-4xl sm:text-5xl tracking-tight text-[#F9FAFB] animate-fade-up delay-100">
+              Learn by doing. <br />
+              <span className="gradient-text">Build with the best.</span>
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-[#9CA3AF] leading-relaxed max-w-2xl animate-fade-up delay-200">
               From weekend buildathons to 8-week competitions — find your next challenge and grow alongside a global community.
@@ -106,16 +107,16 @@ export default function EventsPage() {
       </section>
 
       {/* FILTER BAR */}
-      <section className="border-y border-[#232330] bg-[#13131A]/80 sticky top-[68px] z-30 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 py-4 flex items-center gap-3 overflow-x-auto">
-          <Filter className="h-4 w-4 text-[#6B7280] shrink-0" />
+      <section className="border-y border-[#1F2937] bg-[#111827]/90 sticky top-16 z-30 backdrop-blur-xl">
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10 py-4 flex items-center gap-3 overflow-x-auto">
+          <Filter className="h-5 w-5 text-[#6B7280] shrink-0" />
           {["All", "Buildathons", "Competitions", "Programs", "Workshops"].map((f, i) => (
             <button
               key={f}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+              className={`shrink-0 rounded-lg px-4 py-1.5 text-sm font-semibold transition ${
                 i === 0
-                  ? "bg-[#6366F1] text-[#F5F5F7]"
-                  : "bg-[#232330] text-[#9CA3AF] hover:bg-[#3A3A50] hover:text-[#F5F5F7]"
+                  ? "bg-[#0F766E] text-white"
+                  : "bg-[#1F2937] text-[#9CA3AF] hover:bg-[#374151] hover:text-[#F9FAFB]"
               }`}
             >
               {f}
@@ -125,25 +126,24 @@ export default function EventsPage() {
       </section>
 
       {/* EVENTS GRID */}
-      <section className="py-16 sm:py-20 bg-[#0A0A0F]">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <section className="py-16 sm:py-20 bg-[#0A0E14]">
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {EVENTS.map((e) => (
+            {EVENTS.map((e, idx) => (
               <article
                 key={e.title}
-                className="group relative overflow-hidden card-glow hover:border-[#6366F1]/40 transition-all duration-300"
+                className="card-interactive group overflow-hidden"
               >
-                <div className={`relative h-44 bg-gradient-to-br ${e.color} p-5 overflow-hidden`}>
-                  <div className="absolute inset-0 bg-hero-grid opacity-20" />
-                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+                <div className={`relative h-40 bg-gradient-to-br ${e.color} p-5 overflow-hidden`}>
+                  <div className="absolute inset-0 bg-pattern-dots opacity-20" />
 
                   <div className="relative h-full flex flex-col justify-between">
-                    <span className="self-start text-[10px] font-bold tracking-widest text-white bg-white/15 backdrop-blur px-2.5 py-1 rounded-full">
+                    <span className="self-start text-[10px] font-bold tracking-widest text-white bg-white/20 px-2.5 py-1 rounded">
                       {e.tag}
                     </span>
                     <div>
-                      <p className="text-xs font-semibold text-white/80">{e.type}</p>
-                      <p className="font-display font-bold text-2xl text-white mt-0.5 leading-tight">
+                      <p className="text-xs font-semibold text-white/90">{e.type}</p>
+                      <p className="font-display font-bold text-2xl text-white mt-1 leading-tight">
                         {e.title}
                       </p>
                     </div>
@@ -174,7 +174,7 @@ export default function EventsPage() {
 
                   {e.capacity && (
                     <div className="mt-4">
-                      <div className="h-1.5 bg-[#232330] rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-[#1F2937] rounded-full overflow-hidden">
                         <div
                           className={`h-full bg-gradient-to-r ${e.color} rounded-full transition-all`}
                           style={{ width: `${Math.min(100, (e.registered / e.capacity) * 100)}%` }}
@@ -186,21 +186,21 @@ export default function EventsPage() {
                   <div className="mt-6 flex items-center justify-between">
                     <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
                       e.status === "Registration Open" || e.status === "Enrolling Now" || e.status === "Always Open"
-                        ? "text-[#34D399]"
+                        ? "text-[#22C55E]"
                         : e.status === "Waitlist"
-                        ? "text-[#F59E0B]"
+                        ? "text-[#EAB308]"
                         : "text-[#9CA3AF]"
                     }`}>
                       <span className={`h-1.5 w-1.5 rounded-full animate-pulse ${
                         e.status === "Registration Open" || e.status === "Enrolling Now" || e.status === "Always Open"
-                          ? "bg-[#34D399]"
+                          ? "bg-[#22C55E]"
                           : e.status === "Waitlist"
-                          ? "bg-[#F59E0B]"
+                          ? "bg-[#EAB308]"
                           : "bg-[#6B7280]"
                       }`} />
                       {e.status}
                     </span>
-                    <Link href="/signup" className="inline-flex items-center gap-1.5 text-sm font-bold text-[#818CF8] group/btn hover:text-[#6366F1] transition">
+                    <Link href="/signup" className="inline-flex items-center gap-1.5 text-sm font-bold text-[#5ECAD4] group/btn hover:text-[#14B8A6] transition">
                       Register
                       <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                     </Link>
@@ -213,10 +213,10 @@ export default function EventsPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#13131A]">
-        <div className="mx-auto max-w-4xl px-5 sm:px-8 text-center">
-          <Trophy className="h-10 w-10 text-[#F59E0B] mx-auto" />
-          <h2 className="mt-5 font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F5F5F7]">
+      <section className="py-20 bg-[#111827]">
+        <div className="mx-auto max-w-4xl px-6 sm:px-8 text-center">
+          <Trophy className="h-12 w-12 text-[#F57342] mx-auto" />
+          <h2 className="mt-5 font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">
             Have an idea for a program?
           </h2>
           <p className="mt-3 text-[#9CA3AF] max-w-xl mx-auto">
@@ -224,7 +224,7 @@ export default function EventsPage() {
           </p>
           <Link href="/contact" className="mt-7 btn-primary inline-flex">
             Get in touch
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-5 w-5" />
           </Link>
         </div>
       </section>

@@ -7,10 +7,10 @@ export const metadata = {
 };
 
 const TEAM = [
-  { name: "Aarav Mehta", role: "Founder & CEO", color: "from-[#6366F1] to-[#818CF8]" },
-  { name: "Priya Sharma", role: "Head of Programs", color: "from-[#22D3EE] to-[#06B6D4]" },
-  { name: "Daniel Okafor", role: "Community Lead", color: "from-[#34D399] to-[#10B981]" },
-  { name: "Sofia Garcia", role: "Operations", color: "from-[#A78BFA] to-[#7C3AED]" },
+  { name: "Aarav Mehta", role: "Founder & CEO" },
+  { name: "Priya Sharma", role: "Head of Programs" },
+  { name: "Daniel Okafor", role: "Community Lead" },
+  { name: "Sofia Garcia", role: "Operations" },
 ];
 
 const VALUES = [
@@ -24,16 +24,16 @@ export default function AboutPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative pt-16 sm:pt-24 pb-16 sm:pb-20 bg-[#0A0A0F] overflow-hidden">
-        <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-        <div className="absolute inset-0 bg-hero-grid pointer-events-none" />
+      <section className="relative pt-20 sm:pt-28 pb-16 sm:pb-20 bg-[#0A0E14] overflow-hidden">
+        <div className="absolute inset-0 bg-pattern-dots pointer-events-none" />
+        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-[#0F766E]/10 rounded-full blur-[150px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-4xl px-5 sm:px-8 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full badge-indigo text-xs animate-fade-up">
-            <Compass className="h-3.5 w-3.5" />
+        <div className="relative mx-auto max-w-4xl px-6 sm:px-8 text-center">
+          <div className="inline-flex items-center gap-2 rounded-lg bg-[#0F766E]/15 border border-[#0F766E]/25 px-4 py-2 text-sm font-semibold text-[#5ECAD4] animate-fade-up">
+            <Compass className="h-4 w-4" />
             About TechRise
           </div>
-          <h1 className="mt-6 font-display font-bold text-5xl sm:text-6xl tracking-tight text-[#F5F5F7] animate-fade-up delay-100">
+          <h1 className="mt-6 font-display font-bold text-4xl sm:text-5xl tracking-tight text-[#F9FAFB] animate-fade-up delay-100">
             We exist to <span className="gradient-text">turn curiosity</span> into capability.
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-[#9CA3AF] leading-relaxed max-w-2xl mx-auto animate-fade-up delay-200">
@@ -43,15 +43,15 @@ export default function AboutPage() {
       </section>
 
       {/* MISSION */}
-      <section className="py-20 sm:py-28 bg-[#13131A]">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <section className="py-20 sm:py-28 bg-[#111827]">
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full badge-indigo text-xs">
-                <Eye className="h-3 w-3" />
+              <div className="inline-flex items-center gap-2 rounded-lg bg-[#0F766E]/15 border border-[#0F766E]/25 px-4 py-2 text-sm font-semibold text-[#5ECAD4]">
+                <Eye className="h-4 w-4" />
                 Our Mission
               </div>
-              <h2 className="mt-5 font-display font-bold text-4xl tracking-tight text-[#F5F5F7]">
+              <h2 className="mt-5 font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">
                 Empowering individuals through technology, innovation, and global collaboration.
               </h2>
               <p className="mt-5 text-lg text-[#9CA3AF] leading-relaxed">
@@ -69,8 +69,8 @@ export default function AboutPage() {
                 { value: "2,400+", label: "Students" },
                 { value: "120+", label: "Projects" },
               ].map((s) => (
-                <div key={s.label} className="rounded-2xl bg-[#0A0A0F] border border-[#232330] p-6 hover:border-[#6366F1]/40 transition cursor-default">
-                  <p className="font-display font-bold text-3xl text-[#F5F5F7] glow-indigo">{s.value}</p>
+                <div key={s.label} className="card-interactive rounded-2xl p-6 text-center">
+                  <p className="font-display font-bold text-3xl text-[#F9FAFB]">{s.value}</p>
                   <p className="text-sm text-[#9CA3AF] mt-1">{s.label}</p>
                 </div>
               ))}
@@ -80,26 +80,26 @@ export default function AboutPage() {
       </section>
 
       {/* VALUES */}
-      <section className="py-20 sm:py-28 bg-[#0A0A0F]">
-        <div className="absolute inset-0 bg-hero-grid pointer-events-none opacity-40" />
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <section className="py-20 sm:py-28 bg-[#0A0E14]">
+        <div className="absolute inset-0 bg-pattern-dots pointer-events-none opacity-30" />
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
           <div className="max-w-2xl mx-auto text-center mb-14">
-            <div className="inline-flex items-center gap-2 rounded-full badge-cyan text-xs">
-              <Lightbulb className="h-3 w-3" />
+            <div className="inline-flex items-center gap-2 rounded-lg bg-[#14B8A6]/15 border border-[#14B8A6]/25 px-4 py-2 text-sm font-semibold text-[#5ECAD4]">
+              <Lightbulb className="h-4 w-4" />
               What we live by
             </div>
-            <h2 className="mt-5 font-display font-bold text-4xl sm:text-5xl tracking-tight text-[#F5F5F7]">
+            <h2 className="mt-5 font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">
               Values, not vibes.
             </h2>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-5">
             {VALUES.map((v) => (
-              <div key={v.title} className="card-glow group p-7">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#6366F1]/15 text-[#818CF8] group-hover:bg-[#6366F1]/25 transition">
+              <div key={v.title} className="card-interactive group p-7">
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#0F766E]/15 text-[#5ECAD4] group-hover:bg-[#0F766E]/25 transition">
                   <v.icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-5 font-display font-bold text-xl text-[#F5F5F7]">{v.title}</h3>
+                <h3 className="mt-5 font-display font-bold text-xl text-[#F9FAFB]">{v.title}</h3>
                 <p className="mt-2 text-[#9CA3AF] leading-relaxed">{v.desc}</p>
               </div>
             ))}
@@ -108,26 +108,31 @@ export default function AboutPage() {
       </section>
 
       {/* TEAM */}
-      <section className="py-20 sm:py-28 bg-[#13131A]">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <section className="py-20 sm:py-28 bg-[#111827]" id="team">
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
           <div className="max-w-2xl mx-auto text-center mb-14">
-            <div className="inline-flex items-center gap-2 rounded-full badge-emerald text-xs">
-              <Users className="h-3 w-3" />
+            <div className="inline-flex items-center gap-2 rounded-lg bg-[#22C55E]/15 border border-[#22C55E]/25 px-4 py-2 text-sm font-semibold text-[#22C55E]">
+              <Users className="h-4 w-4" />
               The Team
             </div>
-            <h2 className="mt-5 font-display font-bold text-4xl sm:text-5xl tracking-tight text-[#F5F5F7]">
+            <h2 className="mt-5 font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">
               A small team, a big mission.
             </h2>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {TEAM.map((m) => (
-              <div key={m.name} className="card-glow p-6 text-center">
-                <div className={`h-32 rounded-xl bg-gradient-to-br ${m.color} flex items-center justify-center text-white text-4xl font-display font-bold mx-auto`}>
+            {TEAM.map((m, idx) => (
+              <div key={m.name} className="card-interactive p-6 text-center">
+                <div className={`h-32 rounded-xl bg-gradient-to-br flex items-center justify-center text-white text-4xl font-display font-bold mx-auto ${
+                  idx === 0 ? "from-[#0F766E] to-[#14B8A6]" :
+                  idx === 1 ? "from-[#14B8A6] to-[#5ECAD4]" :
+                  idx === 2 ? "from-[#F57342] to-[#FB923C]" :
+                  "from-[#EAB308] to-[#F59E0B]"
+                }`}>
                   {m.name[0]}
                 </div>
-                <h3 className="mt-5 font-display font-bold text-lg text-[#F5F5F7]">{m.name}</h3>
-                <p className="text-sm text-[#9CA3AF] mt-0.5">{m.role}</p>
+                <h3 className="mt-5 font-display font-bold text-lg text-[#F9FAFB]">{m.name}</h3>
+                <p className="text-sm text-[#9CA3AF] mt-1">{m.role}</p>
               </div>
             ))}
           </div>
@@ -135,11 +140,11 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="relative py-20 sm:py-28 bg-[#0A0A0F] overflow-hidden">
-        <div className="absolute inset-0 bg-hero-grid pointer-events-none opacity-40" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#6366F1]/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="relative mx-auto max-w-4xl px-5 sm:px-8 text-center">
-          <h2 className="font-display font-bold text-4xl sm:text-5xl tracking-tight text-[#F5F5F7]">
+      <section className="relative py-20 sm:py-28 bg-[#0A0E14] overflow-hidden">
+        <div className="absolute inset-0 bg-pattern-dots pointer-events-none opacity-40" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#0F766E]/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative mx-auto max-w-4xl px-6 sm:px-8 text-center">
+          <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">
             Join the movement.
           </h2>
           <p className="mt-4 text-lg text-[#9CA3AF] max-w-xl mx-auto">
@@ -148,10 +153,10 @@ export default function AboutPage() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link href="/events" className="btn-primary">
               Explore programs
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-5 w-5" />
             </Link>
-            <Link href="/donate" className="btn-amber">
-              <Heart className="h-4 w-4" fill="currentColor" />
+            <Link href="/donate" className="btn-accent">
+              <Heart className="h-5 w-5" fill="currentColor" />
               Support us
             </Link>
           </div>
