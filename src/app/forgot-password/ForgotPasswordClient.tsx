@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Compass, Mail, ArrowRight, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { Mail, ArrowRight, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { requestPasswordResetAction } from "@/actions/auth";
 
 export default function ForgotPasswordClient() {
@@ -32,7 +32,7 @@ export default function ForgotPasswordClient() {
     return (
       <section className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-[#0A0E14] px-6 py-12">
         <div className="w-full max-w-md">
-          <Link href="/" className="group inline-flex items-center gap-2.5 mb-6">
+          <Link href="/" className="group inline-flex items-center gap-2.5 mb-8">
             <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-[#0F766E]/20 border border-[#0F766E]/30">
               <Compass className="h-5 w-5 text-[#5ECAD4]" strokeWidth={2} />
             </span>
@@ -44,7 +44,7 @@ export default function ForgotPasswordClient() {
             <span>Check your email</span>
           </div>
 
-          <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">Reset link sent!</h1>
+          <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB] mt-4">Reset link sent!</h1>
           <p className="mt-3 text-[#9CA3AF] leading-relaxed">
             We&apos;ve sent a password reset link to your email. Click the link in the email to set a new password.
           </p>
@@ -71,14 +71,7 @@ export default function ForgotPasswordClient() {
       {/* Left: form */}
       <div className="flex items-center justify-center px-6 sm:px-8 py-12">
         <div className="w-full max-w-md">
-          <Link href="/" className="group inline-flex items-center gap-2.5 mb-8">
-            <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-[#0F766E]/20 border border-[#0F766E]/30">
-              <Compass className="h-5 w-5 text-[#5ECAD4]" strokeWidth={2} />
-            </span>
-            <span className="font-display font-bold text-lg text-[#F9FAFB]">TechRise</span>
-          </Link>
-
-          <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB] mt-4">Forgot password?</h1>
+          <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">Forgot password?</h1>
           <p className="mt-2 text-[#9CA3AF]">
             Enter your email and we&apos;ll send you a reset link.
           </p>

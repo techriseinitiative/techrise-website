@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Compass, Mail, Lock, User, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { signUpAction } from "@/actions/auth";
 
 export default function SignupPage() {
@@ -29,16 +29,7 @@ export default function SignupPage() {
       {/* Left: form */}
       <div className="flex items-center justify-center px-6 sm:px-8 py-12">
         <div className="w-full max-w-md">
-          <Link href="/" className="group inline-flex items-center gap-2.5 mb-8">
-            <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-[#0F766E]/20 border border-[#0F766E]/30">
-              <Compass className="h-5 w-5 text-[#5ECAD4]" strokeWidth={2} />
-            </span>
-            <span className="font-display font-bold text-lg text-[#F9FAFB]">
-              TechRise
-            </span>
-          </Link>
-
-          <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB] mt-4">Start your journey</h1>
+          <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#F9FAFB]">Start your journey</h1>
           <p className="mt-2 text-[#9CA3AF]">Create your free account and join 2,400+ learners.</p>
 
           {error && (
