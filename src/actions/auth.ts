@@ -1,6 +1,7 @@
 "use server";
 
 import { signIn, signOut } from "@/lib/auth";
+import { CredentialsSignin } from "next-auth";
 import { userService } from "@/lib/services/userService";
 import { emailService } from "@/lib/services/emailService";
 import { withResult } from "@/lib/utils";
@@ -43,14 +44,22 @@ export async function loginAction(formData: FormData) {
     return { success: false, error: parsed.error.issues[0].message };
   }
 
-  const result = await signIn("credentials", {
-    email: parsed.data.email,
-    password: parsed.data.password,
-    redirect: false,
-  });
+  try {
+    const result = await signIn("credentials", {
+      email: parsed.data.email,
+      password: parsed.data.password,
+      redirect: false,
+    });
 
-  if (result?.error) {
-    return { success: false, error: "Invalid email or password" };
+    if (result?.error) {
+      return { success: false, error: "Invalid email or password" };
+    }
+  } catch (error) {
+    if (error instanceof CredentialsSignin) {
+      return { success: false, error: "Invalid email or password" };
+    }
+
+    throw error;
   }
 
   redirect("/dashboard");
